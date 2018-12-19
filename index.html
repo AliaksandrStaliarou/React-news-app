@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>React [RU] Tutorial v2</title>
+    <script src="lib/react.development.js"></script>
+    <script src="lib/react-dom.development.js"></script>
+    <script src="lib/prop-types.js"></script>
+    <script src="lib/babel.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            max-width: 1280px;
+            width: 100%;
+            background: skyblue;
+            font-family: sans-serif;
+        }
+
+        #root {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+        }
+
+        p {
+            margin: 0 0 5px;
+        }
+        
+        .article {
+            background: #FFF;
+            border: 1px solid rgba(0, 89, 181, 0.82);
+            width: 600px;
+            margin: 0 0 5px;
+            box-shadow: 2px 2px 5px -1px rgb(0, 81, 202);
+            padding: 3px 5px;
+        }
+
+        .articleAuthor {
+            text-decoration: underline;
+            color: #007DDC;
+        }
+
+        .articleCount {
+            margin: 10px 0 0 0;
+            display: block;
+        }
+
+        .inputPlaceholder {
+          margin: 0 5px 5px 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid rgba(0, 89, 181, 0.82);
+            width: 350px;
+        }
+
+        .formName, .formArea, .formButton {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .formArea {
+            resize: none;
+            height: 60px;
+        }
+
+        .formName, .formArea {
+             padding: 5px;
+        }
+
+        form button {
+            padding: 10px 20px;
+            background: rgba(0, 89, 181, 0.82);
+            color: white;
+            border: none;
+	    text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        form button:hover {
+	    background: rgba(0, 89, 181, 1);
+        }
+
+	form button:disabled {
+  	    background: #CCC;
+  	    color: #999;
+	    cursor: auto;
+	}
+
+        .allNews {
+            align-self: flex-start;
+        }
+        
+
+
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+
+<script type="text/babel">
+
+    const myNews = [
+        {
+            id: 1,
+            author: 'Константин Симонов',
+            text: 'В субботу пятого апреля...',
+            bigText: 'Сырой рассветною порой. Передовые рассмотрели идущих немцев темный строй.'
+        },
+        {
+            id: 2,
+            author: 'Просто Вася',
+            text: 'Считаю, что $ должен стоить 2 рубля!',
+            bigText: 'А евро 2,2!'
+        },
+        {
+            id: 3,
+            author: 'Макс Петров',
+            text: 'Прошло 2 года с прошлых учебников, а $ так и не стоит 2',
+            bigText: 'А евро опять выше 3.'
+        },
+        {
+            id: 4,
+            author: 'Гость',
+            text: 'Только сегодня, только сейчас - акция!',
+            bigText: 'Вся информация на сайте, не реклама!'
+        }
+    ];
+
+
+
+    class Article extends React.Component {
+        state = {
+            visible: false,
+        }
+        handleReadMoreClck = () => { // добавили метод
+            
+            this.setState({ visible: true })
+        }
+        render() {
+            //const { author, text, bigText } = this.props.data
+            let item = this.props.data
+            const {visible} = this.state
+            
+
+            return (
+                <div className='article'>
+                    <p className='articleAuthor'>{item.author}</p>
+                    <p className='articleCount'>{item.text}</p>
+                    {visible == false ? 
+                        <a onClick={this.handleReadMoreClck} href='#' className='article_readMore'>Подробнее</a> : 
+                        <p className=''>{item.bigText}</p>}
+                </div>
+            )
+        }
+    }
+    Article.propTypes = {
+        data: PropTypes.shape({
+            author: PropTypes.string.isRequired,
+            text: PropTypes.string.isRequired,
+            bigText: PropTypes.string.isRequired // добавили propTypes для bigText
+        })
+    }
+
+
+    class News extends React.Component {
+        renderNews = () => {
+            let datas = this.props.data
+            let newsTemplate
+
+            if (datas.length) {
+                newsTemplate = this.props.data.map(function(item) {
+                    return <Article key={item.id} data={item} />
+                })
+            } else {
+                newsTemplate = <p>К сожалению новостей нет</p>
+            }
+            return newsTemplate
+        } 
+        
+
+        render() {
+           let datas = this.props.data
+            
+            return (
+                <React.Fragment>
+                    {this.renderNews()}
+                    {datas.length ? <strong className="allNews" onClick={this.handleCounter}>Всего  новостей: {datas.length}</strong> : null}
+                </React.Fragment>
+            )
+        }
+    }
+    News.propTypes = {
+        data: PropTypes.array.isRequired // PropTypes (с большой буквы) = библиотека prop-types
+    }
+
+
+    class AddNews extends React.Component {
+        state = {
+	    author: '',
+	    text: '',
+        bigText: '',
+	    agreement: false,
+	}
+
+	authorChanger = (event) => {
+	    this.setState({ author: event.currentTarget.value })
+	}
+
+	textChanger = (event) => {
+	    this.setState({ text: event.currentTarget.value })
+	}
+
+	bigTextChanger = (event) => {
+        this.setState({ bigText: event.currentTarget.value })
+    }
+
+	checkboxChecker = (event) => {
+	    this.setState({ agreement: event.currentTarget.checked })
+	}
+
+	validate = () => {
+	    if (this.state.author.trim() == '' || this.state.text.trim() == '' || this.state.agreement == false) {
+	        return false
+	    } else {
+	        return true
+	    }
+	}
+
+
+        /*constructor(props) {
+            super(props)
+            this.input = React.createRef()
+        }
+        componentDidMount() {
+            // ставим фокус в input
+            this.input.current.focus()
+        }*/
+        
+        
+        handlerAlert = (event) => {
+            event.preventDefault()
+	        let { author, text, bigText } = this.state
+
+            this.props.onAddNews({author, text, bigText})
+
+        }
+        render() {
+	    let {author, text, bigText, agreement} = this.state
+            
+            return (
+                <form>
+                    <input 
+			            className="formName"
+			            type="text"
+			            value={this.state.value}
+			            placeholder="Ваше имя"
+			            ref={this.input}
+			            onChange={this.authorChanger}/>
+                    <textarea
+                        className="formArea"
+                        value={this.state.value}
+                        onChange={this.textChanger}></textarea>
+                    <textarea
+                        className="formArea"
+                        value={this.state.value}
+                        onChange={this.bigTextChanger}></textarea>
+                    <label htmlFor='iAgree'><input onChange={this.checkboxChecker}
+			            className="formCheckbox"
+			            id='iAgree'
+			            type='checkbox'
+			            value='rulesAgreement'/>Я согласен с правилами</label>
+                    <button 
+			            className="formButton"
+			            disabled={!this.validate()}
+			            onClick={this.handlerAlert}>alert</button>
+                </form>
+            )
+        }
+    }
+    
+
+
+    class App extends React.Component {
+        state = {
+            news: myNews,
+        }
+        handleAddNews = (data) => {
+            console.log('я вызвана из Add, но имею доступ к this.state у App!', this.state)
+            let newsItem = [data, ...this.state.news]
+            this.setState({news: newsItem})
+
+        }
+        render() {
+            return (
+                <React.Fragment>
+                    <h3>Новости</h3>
+                    <AddNews onAddNews={this.handleAddNews}/>
+                    <News data={this.state.news} />
+                </React.Fragment>
+            )
+        }
+    }
+
+
+    ReactDOM.render (
+        <App/>,
+        document.getElementById('root')
+    );
+
+
+
+
+
+</script>
+
+</body>
+</html>
