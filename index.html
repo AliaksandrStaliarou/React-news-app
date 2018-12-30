@@ -77,6 +77,7 @@
         }
 
         .formName, .formArea {
+             font-family: Arial;
              padding: 5px;
         }
 
@@ -85,12 +86,12 @@
             background: rgba(0, 89, 181, 0.82);
             color: white;
             border: none;
-	    text-transform: uppercase;
+	        text-transform: uppercase;
             cursor: pointer;
         }
 
         form button:hover {
-	    background: rgba(0, 89, 181, 1);
+	        background: rgba(0, 89, 181, 1);
         }
 
 	form button:disabled {
@@ -273,10 +274,12 @@
                     <textarea
                         className="formArea"
                         value={this.state.value}
+                        placeholder="Текст новости"
                         onChange={this.textChanger}></textarea>
                     <textarea
                         className="formArea"
                         value={this.state.value}
+                        placeholder="Тексти новости полностью"
                         onChange={this.bigTextChanger}></textarea>
                     <label htmlFor='iAgree'><input onChange={this.checkboxChecker}
 			            className="formCheckbox"
@@ -286,7 +289,7 @@
                     <button 
 			            className="formButton"
 			            disabled={!this.validate()}
-			            onClick={this.handlerAlert}>alert</button>
+			            onClick={this.handlerAlert}>Добавить новость</button>
                 </form>
             )
         }
